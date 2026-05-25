@@ -57,10 +57,15 @@ allowed-tools:
 
 ```text
 claude-skill > script > local-html > bookmarklet > userscript
-> notion-custom-agent > claude-cowork > platform-extension
+> claude-in-chrome > notion-custom-agent > claude-cowork > platform-extension
 > apps-script-webapp > chrome-extension > cli-tool > web-service
 ```
 
+- **claude-in-chrome**: Chrome 익스텐션으로 현재 열린 브라우저 탭을 Claude가 직접 읽는 방식.
+  캡챠·로그인 세션이 유지된 상태에서 DOM에 접근하므로, Python 스크래핑으로 막히는
+  네이버·쿠팡 등 국내 사이트 크롤링에 사실상 유일한 실용적 방법.
+  API 키·서버 불필요. Claude Team/Pro 이상 + Chrome 익스텐션 설치 필요.
+  설치: https://chromewebstore.google.com/detail/claude/ohgepnolfpggopcamhpimlkbcngkmoof
 - **notion-custom-agent**: Notion 팀 자동화 에이전트 (Business 이상).
   한 명 세팅 → 팀 공유. Slack 멘션 트리거, 리포트 자동생성, 태스크 태깅.
   서비스·키 불필요. "Notion + Slack 연동"의 기본 첫 선택지.
@@ -243,7 +248,7 @@ If recommending a heavy form (web-service, cli-tool), you MUST
 explain why lighter alternatives fail.
 
 Preference order: claude-skill > script > local-html >
-bookmarklet > userscript > notion-custom-agent > claude-cowork >
+bookmarklet > userscript > claude-in-chrome > notion-custom-agent > claude-cowork >
 platform-extension > apps-script-webapp >
 chrome-extension > cli-tool > web-service
 
@@ -279,6 +284,10 @@ implementation_cost가 2 이상 낮은 대안이 있으면,
 - local-html: 브라우저 단일 파일, 오프라인 가능, 키 불필요
 - bookmarklet: 브라우저 즐겨찾기 JS 한 줄, 설치 불필요
 - userscript: Tampermonkey 등, 브라우저 컨텍스트 접근, 키 불필요
+- claude-in-chrome: Chrome 익스텐션으로 현재 탭 DOM을 Claude가 직접 읽음.
+  캡챠·로그인 세션 유지 상태에서 접근 가능. 네이버·쿠팡 등 국내 사이트 스크래핑의
+  사실상 유일한 실용적 방법. API 키·서버 불필요. Claude Team/Pro + Chrome 필요.
+  script로 스크래핑을 시도했으나 캡챠/봇 탐지로 막힌 경우 → 이 형태로 전환.
 - notion-custom-agent: Notion 팀 자동화 에이전트. 한 명 세팅 → 팀 공유.
   Slack 멘션 트리거, 리포트 생성, 태스크 태깅. 키·서버 불필요.
   Notion+Slack 케이스 기본 첫 검토. 불확실하면 WebFetch로 확인:
@@ -778,3 +787,9 @@ Phase 1을 바로 시작할 수 있습니다.
   있습니다. Phase 1을 끝낸 후 다시 productify를 실행하는 것을 권장합니다."
 - **Notion fetch 실패**: "Notion 연결이 필요합니다. MCP 설정을 확인해주세요.
   또는 내용을 직접 붙여넣어 주세요."
+- **네이버·국내 사이트 스크래핑 요청**: script/Python으로 먼저 제안하지 않는다.
+  네이버는 캡챠·봇 탐지가 강력하여 Python urllib/requests로는 대부분 차단됨.
+  **claude-in-chrome을 1순위로 추천**한다.
+  "네이버는 봇 탐지가 강해서 Python 스크래핑보다 Claude in Chrome이 실용적입니다.
+  브라우저에서 직접 로그인한 상태로 페이지를 열면 Claude가 그 내용을 읽을 수 있어요."
+  이미 script로 시도했다가 막힌 경우에도 동일하게 claude-in-chrome으로 안내한다.
